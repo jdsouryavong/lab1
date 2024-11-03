@@ -11,21 +11,14 @@ library(sf)
 library(tidyverse)
 library(conflicted)
 ```
-
+##Reading in the Data
 ```{r}
-boulder <- st_read("C:/Users/jdursing/Downloads/lab1/BoulderSocialMedia/BoulderSocialMedia.shp")
+boulder <- st_read("C:/stuff/UM/fall 24/eas 648/lab 1/BoulderSocialMedia.shp")
 ```
 ```{r}
 boulder
 ```
 
-```{r}
-boulder = st_transform(boulder, 26753)
-ggplot() +
-  geom_sf(data = boulder, aes(color = extent),
-          fill = NA, alpha = 0.2) +
-  theme_bw()
-```
 
 ```{r}
 boulder = st_transform(boulder, 26753)
@@ -35,6 +28,8 @@ ggplot() +
   scale_colour_gradientn(colours = terrain.colors(10)) +
   theme_bw()
 ```
+##Figure 1 shows the extent of each point within the Boulder data set. Extent is how far away you are able to see at each point using viewshed analysis. The gradient goes from green (lower extent, or distance visualizaiton) to pink (higher extent or distance visualization) This is likely connected to elevation, where the higher in elevation you are, the further away you are able to see. 
+
 
 ```{r}
 boulder %>%
@@ -44,6 +39,8 @@ ggplot() +
           fill = NA, alpha = 0.2) +
   theme_bw()
 ```
+##Figure 2 is representing the distance of each point within the Boulder data set that is greater than or equal to 1800m from a water body. Per the legend, the pink color is false, meaning any points within the pink areas *are not* within 1800m from a water body, and any points within the blue zones **are** within 1800m of a water body. 
+
 
 ```{r}
 boulder %>%
@@ -51,6 +48,8 @@ boulder %>%
   ggplot(aes(x=DB, y=Bike_dis)) + 
   geom_boxplot()
 ```
+##Figure 3 is a box plot comparing the distance to bike trails of points from photos posted to *Flickr* and to *Panramio*. The averages are represented by the solid black lines in the boxes, in this case, both are very similar. The boxes represent the upper and lower quartiles, and the points are outliers. So for images posted to both *Flickr* and *Panramio*, there is a similar average distance to bike trails.
+
 
 ```{r}
 library(ggspatial)
@@ -59,21 +58,10 @@ library(viridis)
 
 ```{r}
 ggplot() +
-  geom_sf(data = boulder, aes(color=PT_Elev),
-          fill = NA, alpha = 0.2) + scale_colour_gradientn(colors = plasma(10))
+  geom_sf(data = boulder, aes(color=NatMrk_Dis),
+          fill = NA, alpha = 0.2) + scale_colour_gradientn(colors = viridis(10))
 ```
-
-```{r}
-summary(boulder$DB)
-summary(boulder$PT_Elev)
-```
-
-```{r}
-p <- ggplot() +
-  annotation_spatial(boulder) + 
-  layer_spatial(boulder, aes(col=DB))
-p + scale_color_brewer(palette = "Dark2")
-```
+##Figure 4 is showing the distance to natural landmarks in a gradient. The yellow color represents the point being further away from a natural landmark, while the darker blue/black color means that point is closer to a natural landmark. Due to the amount of color representing 0m away from a natural landmark, those points were taken **AT** a natural landmark
 
 ```{r}
 library(tmap)
@@ -81,25 +69,14 @@ library(tmap)
 
 ```{r}
 tm_shape(boulder) + 
-  tm_symbols(col='PT_Elev',
+  tm_symbols(col='Street_dis',
              style='quantile',
              palette='YlOrRd',
              border.lwd = NA,
              size=0.1)
 ```
+##Figure 5 is an interactive map that shows the distance from each point in the Boulder data to a street or parking lot. Lighter colors represent being closer to a street or parking lot, while the darker red is further away. The red areas, when looking back to compare to the other figures, line up with the areas with high extent (able to see further), within 1800m of a water body, and close to a natural landmark. You are able to zoom in and out on the map, and each point has a pop up that shows the measured distance. 
 
-```{r}
-data("World")
-tm_shape(World) +
-  tm_polygons("gdp_cap_est", style='quantile', legend.title="GDP Per Capita Estimate")
-```
 
-```{r}
-tmap_mode("view")
-```
 
-```{r}
-tm_shape(World) +
-  tm_polygons("gdp_cap_est", style='quantile', legend.title="GD Per Capita Estimate")
-```
 
